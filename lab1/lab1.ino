@@ -1,6 +1,7 @@
 #define SENSOR_NUM      8
 #define FILTER_DEPTH    10
 #define ADC_BITS        12
+#define POS_RANGE       1000.0
 
 int sensorDataRaw[SENSOR_NUM];
 float linePosHist[FILTER_DEPTH];
@@ -25,7 +26,7 @@ void loop() {
         avg += sensorDataRaw[i] * i * pow(2, ADC_BITS);
     }
     
-    float position = map(avg / sum, 0, pow(2, ADC_BITS) * SENSOR_NUM, 0, 1000);
+    float position = map(avg / sum, 0, pow(2, ADC_BITS) * SENSOR_NUM, 0.0, POS_RANGE);
     
     linePosHist[filterIndex] = position;
     filterIndex++;
@@ -35,7 +36,7 @@ void loop() {
     for (int i = 0; i < FILTER_DEPTH; i++) {
       filteredPos += linePosHist[i];
     }
-    filteredPos = filteredPos / 10;
+    filteredPos = filteredPos / FILTER_DEPTH;
     
 //    Uncomment for task 2
 //    Serial.print("Raw Line Position: ");
@@ -48,7 +49,7 @@ void loop() {
     Serial.print('\t');
 
 //    Uncomment for task 4
-//    if (filteredPos < 500)
+//    if (filteredPos < POS_RANGE / 2.0)
 //      Serial.print("Turn Left");
 //    else
 //      Serial.print("Turn Right");
